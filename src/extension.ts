@@ -1,26 +1,93 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
-import * as vscode from 'vscode';
+import * as vscode from "vscode";
+import { findSecurityIssues } from "./securityScanner";
+import { DevShieldCodeActionProvider } from "./codeActions";
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
+  vscode.window.showInformationMessage("DevShieldX is ACTIVE 🚀");
+  console.log("DevShieldX is active");
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "devshieldx" is now active!');
+  const collection = vscode.languages.createDiagnosticCollection("devshieldx");
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('devshieldx.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from devshieldx!');
-	});
+  const updateDiagnostics = (document: vscode.TextDocument) => {
+    if (
+      ![
+        "javascript",
+        "typescript",
+        "javascriptreact",
+        "typescriptreact",
+      ].includes(document.languageId)
+    ) {
+      return;
+    }
 
-	context.subscriptions.push(disposable);
+    const text = document.getText();
+    const issues = findSecurityIssues(text);
+
+    const diagnostics: vscode.Diagnostic[] = [];
+
+    issues.forEach((issue) => {
+      const position = document.positionAt(issue.index);
+
+      const line = document.lineAt(position.line);
+      const range = line.range;
+
+      let severity = vscode.DiagnosticSeverity.Warning;
+
+      if (issue.severity === "high") {
+        severity = vscode.DiagnosticSeverity.Error;
+      }
+
+      const diagnostic = new vscode.Diagnostic(range, issue.message, severity);
+
+      // CRITICAL: link fix
+      diagnostic.code = issue.fix || "security-issue";
+
+      diagnostics.push(diagnostic);
+    });
+
+    collection.set(document.uri, diagnostics);
+  };
+
+  // On change
+  context.subscriptions.push(
+    vscode.workspace.onDidChangeTextDocument((e) => {
+      updateDiagnostics(e.document);
+    }),
+  );
+
+  // On open
+  context.subscriptions.push(
+    vscode.window.onDidChangeActiveTextEditor((editor) => {
+      if (editor) {
+        updateDiagnostics(editor.document);
+      }
+    }),
+  );
+
+  // Run initially
+  if (vscode.window.activeTextEditor) {
+    updateDiagnostics(vscode.window.activeTextEditor.document);
+  }
+
+  // Register Quick Fix
+  context.subscriptions.push(
+    vscode.languages.registerCodeActionsProvider(
+      ["javascript", "typescript", "javascriptreact", "typescriptreact"],
+      new DevShieldCodeActionProvider(),
+      {
+        providedCodeActionKinds: [vscode.CodeActionKind.QuickFix],
+      },
+    ),
+  );
+
+  // Status bar
+  const statusBar = vscode.window.createStatusBarItem(
+    vscode.StatusBarAlignment.Right,
+  );
+  statusBar.text = "DevShieldX Active";
+  statusBar.show();
+
+  context.subscriptions.push(statusBar);
 }
 
-// This method is called when your extension is deactivated
 export function deactivate() {}
