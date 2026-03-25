@@ -1,18 +1,29 @@
 {
   "name": "devshieldx",
   "displayName": "DevShieldX Code Security Scanner",
-  "description": "Detect security vulnerabilities in JavaScript and TypeScript code",
-  "version": "0.0.1",
+  "description": "Detect vulnerabilities like XSS, SQL Injection, eval misuse and more in JavaScript & TypeScript",
+  "version": "0.2.0",
+  "publisher": "Naveendev",
   "engines": {
-    "vscode": "^1.110.0"
+    "vscode": "^1.80.0"
   },
   "categories": [
+    "Linters",
+    "Programming Languages",
     "Other"
   ],
   "activationEvents": [
-    "*"
+    "onLanguage:javascript",
+    "onLanguage:typescript",
+    "onLanguage:javascriptreact",
+    "onLanguage:typescriptreact"
   ],
   "main": "./dist/extension.js",
+  "icon": "assets/icon.png",
+  "galleryBanner": {
+    "color": "#0f172a",
+    "theme": "dark"
+  },
   "contributes": {
     "commands": [
       {
@@ -35,12 +46,16 @@
     "lint": "eslint src",
     "test": "vscode-test"
   },
+  "dependencies": {
+    "@babel/parser": "^7.29.2",
+    "@babel/traverse": "^7.29.0"
+  },
   "devDependencies": {
     "@types/babel__traverse": "^7.28.0",
     "@types/jest": "^30.0.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "22.x",
-    "@types/vscode": "^1.110.0",
+    "@types/vscode": "^1.80.0",
     "@vscode/test-cli": "^0.0.12",
     "@vscode/test-electron": "^2.5.2",
     "esbuild": "^0.27.3",
@@ -49,8 +64,24 @@
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.56.1"
   },
-  "dependencies": {
-    "@babel/parser": "^7.29.2",
-    "@babel/traverse": "^7.29.0"
-  }
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thephotogenicbug/devshieldx"
+  },
+  "homepage": "https://github.com/thephotogenicbug/devshieldx",
+  "bugs": {
+    "url": "https://github.com/thephotogenicbug/devshieldx/issues"
+  },
+  "license": "MIT",
+  "keywords": [
+    "security",
+    "scanner",
+    "javascript",
+    "typescript",
+    "vscode",
+    "xss",
+    "sql-injection",
+    "sast",
+    "static-analysis"
+  ]
 }

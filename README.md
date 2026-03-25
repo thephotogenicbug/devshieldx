@@ -1,71 +1,217 @@
-# devshieldx README
+# DevShieldX Code Security Scanner
 
-This is the README for your extension "devshieldx". After writing up a brief description, we recommend including the following sections.
+<p align="center">
+  <img src="https://raw.githubusercontent.com/thephotogenicbug/devshieldx/main/assets/icon.png" alt="DevShieldX Logo" width="120"/>
+</p>
 
-## Features
-
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
-
-For example if there is an image subfolder under your extension project workspace:
-
-\!\[feature X\]\(images/feature-x.png\)
-
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
-
-## Requirements
-
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
-
-## Extension Settings
-
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
-This extension contributes the following settings:
-
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
-
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
-
-## Release Notes
-
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
+DevShieldX is a Visual Studio Code extension that detects common security vulnerabilities in JavaScript and TypeScript code using AST-based analysis. It provides real-time diagnostics and smart quick fixes directly inside the editor.
 
 ---
 
-## Following extension guidelines
+## Overview
 
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
+Modern frontend and backend applications often contain subtle security risks such as unsafe DOM manipulation, dynamic code execution, and insecure API usage. DevShieldX helps developers identify and fix these issues early during development.
 
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
+The extension analyzes source code using an Abstract Syntax Tree (AST), making detection more accurate than simple pattern matching.
 
-## Working with Markdown
+---
 
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
+## Key Features
 
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
+### Security Detection
 
-## For more information
+Detects common vulnerabilities:
 
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
+- `eval()` usage (remote code execution risk)
+- SQL injection (string concatenation and template queries)
+- `innerHTML` assignments (XSS risk)
+- `document.write` usage
+- Unsafe `setTimeout` with string execution
+- Hardcoded secrets (API keys, tokens)
 
-**Enjoy!**
+---
+
+### Real-Time Diagnostics
+
+- Issues are highlighted as you type
+- Integrated with VS Code Problems panel
+- Precise highlighting using AST node ranges
+
+---
+
+### Smart Quick Fixes
+
+- Replace `eval()` with safer alternatives
+- Convert `innerHTML` to `textContent`
+- Suggest parameterized SQL queries
+- Remove unsafe `document.write`
+- Convert `setTimeout` string execution to functions
+- Replace hardcoded secrets with environment variables
+
+---
+
+### Developer Experience
+
+- Hover explanations for security issues
+- Status bar indicator showing issue count
+- Clean, non-breaking code transformations
+- Lightweight and fast scanning
+
+---
+
+## Supported Languages
+
+- JavaScript (.js)
+- TypeScript (.ts)
+- React (.jsx, .tsx)
+
+---
+
+## Installation
+
+### From Marketplace (Recommended)
+
+Search for **DevShieldX Code Security Scanner** in the VS Code Extensions panel.
+
+### Local Development
+
+```bash
+git clone https://github.com/thephotogenicbug/devshieldx
+cd devshieldx
+npm install
+npm run compile
+```
+
+Run extension:
+
+```bash
+F5
+```
+
+---
+
+## Usage
+
+1. Open any JavaScript or TypeScript file
+2. DevShieldX automatically scans the file
+3. Issues appear highlighted in the editor
+4. Hover over highlighted code to view details
+5. Press:
+
+```
+Ctrl + .
+```
+
+to apply quick fixes
+
+---
+
+## Example
+
+### Input Code
+
+```js
+eval(userInput);
+
+element.innerHTML = userInput;
+
+db.query("SELECT * FROM users WHERE id = " + userId);
+
+setTimeout("alert('hack')", 1000);
+
+const apiKey = "SECRET_KEY";
+```
+
+---
+
+### Output After Fixes
+
+```js
+JSON.parse(userInput);
+
+element.textContent = userInput;
+
+db.query("SELECT * FROM users WHERE id = ?", [userId]);
+
+setTimeout(() => {
+  alert("alert message");
+}, 1000);
+
+const apiKey = process.env.API_KEY;
+```
+
+---
+
+## Commands
+
+| Command                             | Description                                 |
+| ----------------------------------- | ------------------------------------------- |
+| DevShieldX: Fix All Security Issues | Applies fixes to all detected issues (Beta) |
+
+---
+
+## How It Works
+
+DevShieldX uses Babel’s parser and AST traversal to analyze code structure instead of relying on simple string matching.
+
+This allows:
+
+- Accurate detection of function calls and assignments
+- Reduced false positives
+- Context-aware fixes
+
+---
+
+## Known Limitations (Beta)
+
+- Fixes may not preserve formatting in complex cases
+- SQL fixes use generic parameterization
+- No taint analysis (data flow tracking) yet
+- Limited support for deeply nested expressions
+
+---
+
+## Roadmap
+
+- AST-based precise transformations (node-level fixes)
+- Taint analysis (track user input flow)
+- Configurable rules system
+- Project-wide scanning
+- Custom rule support
+- Advanced reporting UI
+
+---
+
+## Contributing
+
+Contributions are welcome.
+
+Steps:
+
+1. Fork the repository
+2. Create a feature branch
+3. Submit a pull request
+
+---
+
+## License
+
+MIT License
+
+---
+
+## Author
+
+Naveen Kumar
+
+---
+
+## Feedback
+
+If you find bugs or have feature requests, please open an issue on GitHub.
+
+---
+
+## Keywords
+
+security, vscode extension, javascript security, typescript security, xss, sql injection, code scanner, dev tools
