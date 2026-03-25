@@ -7,6 +7,18 @@ export function activate(context: vscode.ExtensionContext) {
 
   const collection = vscode.languages.createDiagnosticCollection("devshieldx");
 
+  // Status bar
+  const statusBar = vscode.window.createStatusBarItem(
+    vscode.StatusBarAlignment.Right,
+  );
+
+  const updateStatusBar = (issuesCount: number) => {
+    statusBar.text = `🛡️ DevShieldX: ${issuesCount} issues`;
+    statusBar.show();
+  };
+
+  context.subscriptions.push(statusBar);
+
   const updateDiagnostics = (document: vscode.TextDocument) => {
     if (
       ![
@@ -105,18 +117,6 @@ export function activate(context: vscode.ExtensionContext) {
       },
     ),
   );
-
-  // Status bar
-  const statusBar = vscode.window.createStatusBarItem(
-    vscode.StatusBarAlignment.Right,
-  );
-
-  const updateStatusBar = (issuesCount: number) => {
-    statusBar.text = `🛡️ DevShieldX: ${issuesCount} issues`;
-    statusBar.show();
-  };
-
-  context.subscriptions.push(statusBar);
 }
 
 export function deactivate() {}
