@@ -4,7 +4,6 @@ import { DevShieldCodeActionProvider } from "./codeActions";
 
 export function activate(context: vscode.ExtensionContext) {
   vscode.window.showInformationMessage("DevShieldX is ACTIVE 🚀");
-  console.log("DevShieldX is active");
 
   const collection = vscode.languages.createDiagnosticCollection("devshieldx");
 
@@ -40,7 +39,7 @@ export function activate(context: vscode.ExtensionContext) {
       const diagnostic = new vscode.Diagnostic(range, issue.message, severity);
 
       // CRITICAL: link fix
-      diagnostic.code = issue.fix || "security-issue";
+      diagnostic.code = issue.fixType || "security-issue";
 
       diagnostics.push(diagnostic);
     });
