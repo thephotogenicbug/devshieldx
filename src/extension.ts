@@ -27,8 +27,10 @@ export function activate(context: vscode.ExtensionContext) {
     issues.forEach((issue) => {
       const position = document.positionAt(issue.index);
 
-      const line = document.lineAt(position.line);
-      const range = line.range;
+      const start = document.positionAt(issue.index);
+      const end = document.positionAt(issue.index + 20); // small range
+
+      const range = new vscode.Range(start, end);
 
       let severity = vscode.DiagnosticSeverity.Warning;
 
@@ -45,6 +47,7 @@ export function activate(context: vscode.ExtensionContext) {
     });
 
     collection.set(document.uri, diagnostics);
+    updateStatusBar(diagnostics.length);
   };
 
   // On change
@@ -78,13 +81,40 @@ export function activate(context: vscode.ExtensionContext) {
       },
     ),
   );
+  // Hover provider
+  context.subscriptions.push(
+    vscode.languages.registerHoverProvider(
+      ["javascript", "typescript", "javascriptreact", "typescriptreact"],
+      {
+        provideHover(document, position) {
+          const text = document.getText();
+          const issues = findSecurityIssues(text);
+
+          for (const issue of issues) {
+            const start = document.positionAt(issue.index);
+            const end = document.positionAt(issue.index + 20);
+            const range = new vscode.Range(start, end);
+
+            if (range.contains(position)) {
+              return new vscode.Hover(
+                `🚨 ${issue.message}\n\n💡 Security Risk: ${issue.severity.toUpperCase()}`,
+              );
+            }
+          }
+        },
+      },
+    ),
+  );
 
   // Status bar
   const statusBar = vscode.window.createStatusBarItem(
     vscode.StatusBarAlignment.Right,
   );
-  statusBar.text = "DevShieldX Active";
-  statusBar.show();
+
+  const updateStatusBar = (issuesCount: number) => {
+    statusBar.text = `🛡️ DevShieldX: ${issuesCount} issues`;
+    statusBar.show();
+  };
 
   context.subscriptions.push(statusBar);
 }
