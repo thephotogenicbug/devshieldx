@@ -16,8 +16,8 @@
   "contributes": {
     "commands": [
       {
-        "command": "devshieldx.helloWorld",
-        "title": "Hello World"
+        "command": "devshieldx.fixAll",
+        "title": "DevShieldX: Fix All Security Issues"
       }
     ]
   },
